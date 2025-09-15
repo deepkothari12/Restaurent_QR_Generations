@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Restaurant QR Generator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --card: #ffffff;
+            --accent: #2b6ef6;
+            --muted: #6b7280;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, var(--bg), #eef3ff);
+            padding: 32px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 920px;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 30px rgba(30, 41, 59, 0.08);
+            padding: 28px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .panel {
+            padding: 12px;
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 20px;
+            letter-spacing: -0.2px;
+        }
+
+        p.lead {
+            margin: 0 0 16px;
+            color: var(--muted);
+            font-size: 14px
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        label {
+            font-size: 13px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .input,
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #e6e9f2;
+            background: #fbfdff;
+            font-size: 14px;
+            outline: none;
+            transition: box-shadow .15s, border-color .15s;
+        }
+
+        .input:focus,
+        textarea:focus {
+            border-color: rgba(43, 110, 246, 0.85);
+            box-shadow: 0 6px 18px rgba(43, 110, 246, 0.08);
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn.primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 6px 18px rgba(43, 110, 246, 0.15);
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(43, 110, 246, 0.12)
+        }
+
+        .btn.secondary {
+            background: #f3f6ff;
+            color: var(--accent);
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* QR card */
+        .qr-card {
+            background: linear-gradient(180deg, #ffffff, #fbfdff);
+            border-radius: 10px;
+            padding: 18px;
+            border: 1px solid #eef3ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            min-height: 360px;
+        }
+
+        .qr-preview {
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #f8fafc, #ffffff);
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+            padding: 8px;
+        }
+
+        .meta {
+            text-align: center;
+        }
+
+        .meta .title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .meta .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .help {
+            margin-top: 14px;
+            font-size: 13px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        /* responsive */
+        @media (max-width:880px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-card {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container" role="main">
+        <section class="panel" aria-labelledby="genTitle">
+            <h1 id="genTitle">Restaurant QR Code Generator</h1>
+            <p class="lead">Enter the restaurant name and a "drive line" (URL or short text). Click <strong>Generate
+                    QR</strong> to create a QR code that guests can scan.</p>
+
+            <form action="{% url 'submit_data' %}" id="qrForm" method="post">
+                {%csrf_token %}
+                <div>
+                    <label for="name">Restaurant Name</label>
+                    <input id="name" name="Restaurant_Name" class="input" placeholder="e.g., The Olive Garden"
+                        value="{{ restaurent_name }}" required>
+                </div>
+
+                <div>
+                    <label for="drive">Drive Line (URL or text)</label>
+                    <input id="drive" class="input" name="link"
+                        placeholder="e.g., https://restaurant.example.com/menu or 'Table 5 — Pickup'"
+                        value="{{ menu_drive_link }}" required>
+                </div>
+
+                <div class="controls">
+                    <button id="generateBtn" class="btn primary" type="submit"><i class="fa fa-qrcode"></i> Generate
+                        QR</button>
+
+                    <!-- <button id="downloadBtn" class="btn secondary" type="button" disabled><i class="fa fa-download"></i>
+                        Download</button> -->
+                    <a href="{{ qrcode_url }}" download="{{ restaurent_name|default:'qrcode' }}.png" id="downloadBtn"
+                        class="btn secondary">
+                        <i class="fa fa-download"></i> Download
+                    </a>
+                </div>
+
+                <div id="instructions" class="help">If the drive line starts with <code>http</code> the QR will contain
+                    the link. Otherwise it encodes the restaurant name and drive line as plain text.</div>
+            </form>
+        </section>
+
+        <aside class="qr-card" aria-labelledby="previewTitle">
+            <h2 id="previewTitle" style="margin:0;font-size:15px">Preview</h2>
+            <!-- <div class="qr-preview" id="qrcodeHolder" aria-live="polite">
+               
+                <div style="text-align:center;color:#9aa4b2">No QR yet</div>
+            </div> -->
+            <div class="qr-preview" id="qrcodeHolder" aria-live="polite">
+                {% if qrcode %}
+                <img src="data:image/png;base64,{{ qrcode }}" alt="QR Code" style="max-width:100%;height:auto;">
+                {% else %}
+                <div style="text-align:center;color:#9aa4b2">No QR yet</div>
+                {% endif %}
+            </div>
+
+
+            <div class="meta">
+                <div class="title" id="metaTitle">—</div>
+                <div class="subtitle" id="metaSubtitle">QR content will appear here</div>
+            </div>
+
+            <div style="width:100%;display:flex;gap:8px;justify-content:center">
+                <!-- <button id="smallDownload" class="btn ghost" type="button" disabled><i class="fa fa-file-image"></i>
+                    Save PNG</button> -->
+            </div>
+        </aside>
+    </main>
+
+
+</body>
+
+</html>
