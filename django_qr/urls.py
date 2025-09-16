@@ -22,5 +22,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("" , view=views.home_page , name="home_page"),
     path("submit/" , view = views.submit_data , name='submit_data'),
-    # path("download/" , view = views.download_qr_code , name='download_qr_code'),
 ]
