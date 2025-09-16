@@ -114,13 +114,36 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+#Static files settings
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # standard path
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Media files settings
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # separate, not inside static
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Vercel-specific settings
+if 'VERCEL' in os.environ:
+    # On Vercel, use the build output directory for static files
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
+    
+    # Add your domain to allowed hosts
+    ALLOWED_HOSTS = ['*']  # Be more specific in production
+    
+    # Debug should be False in production
+    DEBUG = False
 
+# Static files finders (ensure these are included)
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
+# Additional directories to search for static files
+STATICFILES_DIRS = [
+    # Add any additional static file directories here
+    # os.path.join(BASE_DIR, 'static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
