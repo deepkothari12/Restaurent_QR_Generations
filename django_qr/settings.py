@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-#_!33kn(9zkn2&nn+f$-p!&*f#$)ut&u^9+4t1takpyuzd2qw+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [".vercel.app"]
 
 
 # Application definition
@@ -73,12 +73,12 @@ WSGI_APPLICATION = 'django_qr.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
@@ -114,36 +114,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-#Static files settings
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media files settings
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles' , 'static')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'staticfiles' , 'media')
 
-# Vercel-specific settings
-if 'VERCEL' in os.environ:
-    # On Vercel, use the build output directory for static files
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
-    
-    # Add your domain to allowed hosts
-    ALLOWED_HOSTS = ['*']  # Be more specific in production
-    
-    # Debug should be False in production
-    DEBUG = False
-
-# Static files finders (ensure these are included)
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
-
-# Additional directories to search for static files
-STATICFILES_DIRS = [
-    # Add any additional static file directories here
-    # os.path.join(BASE_DIR, 'static'),
-]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
