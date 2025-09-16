@@ -4,7 +4,7 @@ echo "BUILD START"
 python3.9 -m pip install -r requirements.txt
 
 # Collect static files into STATIC_ROOT (staticfiles/)
-python3.9 manage.py collectstatic --noinput --clear
+python3.9 manage.py collectstatic --noinput  --clear
 
 # Create output folder for Vercel
 mkdir -p staticfiles_build
